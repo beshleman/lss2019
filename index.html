@@ -25,8 +25,111 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-markdown>
+					<textarea data-template>
+						# An Overview of libseccomp 
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+						# Agenda
+						- What is `seccomp`?
+						- Control Offered By `seccomp`
+						- What is `libseccomp`?
+						- Demo
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						# What is seccomp?
+						- Kernel attack-surface reduction at the syscall level
+						- BPF bytecode passed from a process to the kernel
+						- BPF bytecode is then executed against syscalls and syscall args made by that process
+							- And syscalls made by its child processes
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### What controls may these BPF programs exercise over syscalls?
+						- Allow the syscall
+						- Force the syscall to return a specific error number
+						- Log the syscall
+						- Kill the process
+						- etc… (`man seccomp` for all actions)
+						
+						*Based on return value of the loaded BPF programs*
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						# How is seccomp + BPF used?
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### Use Case: The Chromium Browser (1)
+						- The web browser restricts syscalls of function-specific processes with seccomp
+						- Each browser sandbox has a baseline seccomp policy
+						- The “renderer” process, the “GPU” process, etc… inherit the baseline policy, but exercise further syscall restriction.
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						#### Use Case: The Chromium Browser - The GPU Process (2)
+
+						|      System Calls Usable By The GPU Process               |                                    |
+						|---------------------|------------------------------------|
+						| open()              | ioctl()                            |
+						| openat()            | mmap()                             |
+						| mprotect()          | access()                           |
+						| sched_getaffinity() | setpriority()                      |
+						| sched_setaffinity() | *baseline whitelisted syscalls...* |
+						|                     |                                    |
+						|                     |                                    |
+
+
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### Use Case: The Chromium Browser - The GPU Process (3)
+
+						Whitelisted syscalls are only those needed for:
+						- interacting with the GPU device driver
+						- for process schedule optimization
+
+						*Given a compromised GPU process, the kernel can be targeted via ~300 fewer syscalls*
+
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### What is libseccomp?
+						- C API for generating seccomp filters
+							- Eliminates the need to handwrite BPF
+						- Generated BPF is cross-architecture, safe, and optimized.
+							- Particularly useful for architectures that support emulating 32-bit variants.
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					### libseccomp vs raw BPF
+					![Image of libseccomp](images/libseccomp.png)
+					[Source: Tutorial: The Why and How of libseccomp - Tom Hromatka, Oracle & Paul Moore, Cisco*](https://lssna19.sched.com/event/RHaK/tutorial-the-why-and-how-of-libseccomp-tom-hromatka-oracle-paul-moore-cisco)
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					### Demo
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					### References
+					- [Linux Security and How Web Browser Sandboxes Really Work - Patricia Aas](https://youtu.be/jc7FpkyrOz0)
+					</textarea>
+				</section>
 			</div>
 		</div>
 
