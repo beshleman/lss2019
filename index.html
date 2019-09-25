@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/custom.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
@@ -43,40 +44,44 @@
 				<section data-markdown>
 					<textarea data-template>
 						# What is seccomp?
-						- Kernel attack-surface reduction at the syscall level
-						- BPF bytecode passed from a process to the kernel
-						- BPF bytecode is then executed against syscalls and syscall args made by that process
-							- And syscalls made by its child processes
+						- A kernel subsystem that supports kernel attack-surface reduction at the system call level
 					</textarea>
+				</section>
+				<section>
+					<div id="left" style="font-size: 75%;">
+						<ol>
+							<li>BPF bytecode is passed from a process to the kernel</li>
+							<li>Those BPF programs are then executed by the kernel against syscalls and syscall arguments made by that process</li>
+							<li>The BPF programs each return a value</li>
+							<li>Based on that return value, the kernel will exercise some policy decision</li>
+						</ol>
+					</div>
+					<div id="right">
+						<img data-src="images/seccomp-architecture.png" style="background-color:white; width:550px; height: 400px;" />
+					</div>
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-						### What controls may these BPF programs exercise over syscalls?
+						### What types of policy decisions?
 						- Allow the syscall
 						- Force the syscall to return a specific error number
 						- Log the syscall
 						- Kill the process
-						- etc… (`man seccomp` for all actions)
+						- There are more, see `man seccomp` for a complete list
 						
-						*Based on return value of the loaded BPF programs*
 					</textarea>
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-						# How is seccomp + BPF used?
-					</textarea>
-				</section>
-				<section data-markdown>
-					<textarea data-template>
-						### Use Case: The Chromium Browser (1)
+						### Case Study: The Chromium Browser (1)
 						- The web browser restricts syscalls of function-specific processes with seccomp
-						- Each browser sandbox has a baseline seccomp policy
+						- The browser uses a baseline seccomp policy
 						- The “renderer” process, the “GPU” process, etc… inherit the baseline policy, but exercise further syscall restriction.
 					</textarea>
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-						#### Use Case: The Chromium Browser - The GPU Process (2)
+						#### Case Study: The Chromium Browser - The GPU Process (2)
 
 						|      System Calls Usable By The GPU Process               |                                    |
 						|---------------------|------------------------------------|
@@ -93,7 +98,7 @@
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-						### Use Case: The Chromium Browser - The GPU Process (3)
+						### Case Study: The Chromium Browser - The GPU Process (3)
 
 						Whitelisted syscalls are only those needed for:
 						- interacting with the GPU device driver
