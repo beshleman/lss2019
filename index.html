@@ -128,6 +128,107 @@
 					[Source: Tutorial: The Why and How of libseccomp - Tom Hromatka, Oracle & Paul Moore, Cisco*](https://lssna19.sched.com/event/RHaK/tutorial-the-why-and-how-of-libseccomp-tom-hromatka-oracle-paul-moore-cisco)
 					</textarea>
 				</section>
+
+				<section>
+					<h3>The basics</h3>
+
+					<section>
+						Initialize the context:
+						<pre><code class="hljs">
+	scmp_filter_ctx ctx;
+	ctx = seccomp_init(SCMP_ACT_KILL);
+						</code></pre>
+					</section>
+
+					<section>
+						Initialize the context:
+						<pre><code class="hljs">
+	scmp_filter_ctx ctx;
+	ctx = seccomp_init(SCMP_ACT_ERRNO(42));
+						</code></pre>
+					</section>
+
+					<section>
+						Add some rules:
+						<pre><code class="hljs" data-trim>
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+					 SCMP_SYS(close), 0);
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+					 SCMP_SYS(exit_group), 0);
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+					 SCMP_SYS(openat), 0);
+						</code></pre>
+					</section>
+
+					<section>
+						Load the context:
+						<pre><code class="hljs" data-trim>
+	seccomp_load(ctx);
+						</code></pre>
+					</section>
+
+					<section>
+						Use the syscalls:
+						<pre><code class="hljs" data-trim>
+	fd = open("hello", O_RDONLY);
+	if (fd < 0) {
+		rc = errno;
+	}
+						</code></pre>
+					</section>
+
+					<section>
+						Cleanup:
+						<pre><code class="hljs" data-trim>
+	close(fd);
+	seccomp_release(ctx);
+						</code></pre>
+
+					</section>
+				</section>
+
+				<section>
+					<h3>Filtering based on the arguments</h3>
+
+					<section>
+						Only alllow writes to standard out.
+						<pre></code>
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 1,
+			SCMP_A0_64(SCMP_CMP_EQ, STDOUT_FILENO));
+						</code></pre>
+					</section>
+
+					<section>
+						Only alllow writes to standard out... that are also only
+						14 bytes in length.
+						<pre></code>
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 2,
+			SCMP_A0_64(SCMP_CMP_EQ, STDOUT_FILENO),
+			SCMP_A2_64(SCMP_CMP_LT, 14));
+						</code></pre>
+					</section>
+
+					<section>
+						<blockquote>
+						But I want to only write to a file named "foo"
+						</blockquote>
+						<span class="fragment">
+							<img src="images/nooooo.gif" width="480" height="384" style="border:none"/>
+						</span>
+					</section>
+
+					<section>
+						Don't make life harder than it has to be:
+						<pre></code>
+	fd = open(...);
+	...
+	seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 2,
+			SCMP_A0_64(SCMP_CMP_EQ, fd),
+			SCMP_A2_64(SCMP_CMP_LT, 14));
+						</code></pre>
+					</section>
+				</section>
+
 				<section data-markdown>
 					<textarea data-template>
 					### Demo
