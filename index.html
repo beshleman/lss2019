@@ -36,9 +36,10 @@
 					<textarea data-template>
 						# Agenda
 						- What is `seccomp`?
-						- Control Offered By `seccomp`
+						- How does `seccomp` work?
+						- Case Study: Chromium
 						- What is `libseccomp`?
-						- Demo
+						- `libseccomp` Demo
 					</textarea>
 				</section>
 				<section data-markdown>
@@ -50,10 +51,11 @@
 				<section>
 					<div id="left" style="font-size: 75%;">
 						<ol>
+							<li>seccomp executes policy that is implemented in BPF (Berkeley Packet Filter)</li>
 							<li>BPF bytecode is passed from a process to the kernel</li>
 							<li>Those BPF programs are then executed by the kernel against syscalls and syscall arguments made by that process</li>
 							<li>The BPF programs each return a value</li>
-							<li>Based on that return value, the kernel will exercise some policy decision</li>
+							<li>Based on those return values, the kernel will exercise a policy decision</li>
 						</ol>
 					</div>
 					<div id="right">
