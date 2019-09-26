@@ -28,7 +28,9 @@
 			<div class="slides">
 				<section data-markdown>
 					<textarea data-template>
-						# An Overview of libseccomp 
+						## An Overview of seccomp / libseccomp 
+						
+						*(LSS-NA 2019)*
 					</textarea>
 				</section>
 
@@ -46,6 +48,7 @@
 					<textarea data-template>
 						# What is seccomp?
 						- A kernel subsystem that supports kernel attack-surface reduction at the system call level
+						- i.e., security by syscall-based policy
 					</textarea>
 				</section>
 				<section>
@@ -69,8 +72,7 @@
 						- Force the syscall to return a specific error number
 						- Log the syscall
 						- Kill the process
-						- There are more, see `man seccomp` for a complete list
-						
+						- etc...
 					</textarea>
 				</section>
 				<section data-markdown>
