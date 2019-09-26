@@ -128,6 +128,59 @@
 					[Source: Tutorial: The Why and How of libseccomp - Tom Hromatka, Oracle & Paul Moore, Cisco*](https://lssna19.sched.com/event/RHaK/tutorial-the-why-and-how-of-libseccomp-tom-hromatka-oracle-paul-moore-cisco)
 					</textarea>
 				</section>
+                                <section>
+                                    <h3>Example 1</h3>
+
+
+                                    <section>
+                                        Initialize the context:
+                                        <pre><code class="hljs">
+    scmp_filter_ctx ctx;
+    ctx = seccomp_init(SCMP_ACT_KILL);
+    if (!ctx)
+        goto out;
+                                        </code></pre>
+                                    </section>
+
+                                    <section>
+                                        Add some rules:
+                                        <pre><code class="hljs" data-trim>
+    seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+                     SCMP_SYS(close), 0);
+    seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+                     SCMP_SYS(exit_group), 0);
+    seccomp_rule_add(ctx, SCMP_ACT_ALLOW,
+                     SCMP_SYS(openat), 0);
+                                        </code></pre>
+                                    </section>
+
+
+                                    <section>
+                                        Load the context:
+                                        <pre><code class="hljs" data-trim>
+    seccomp_load(ctx);
+                                        </code></pre>
+                                    </section>
+
+
+                                    <section>
+                                        Use the syscalls:
+                                        <pre><code class="hljs" data-trim>
+    fd = open("hello", O_RDONLY);
+    if (fd < 0) {
+        rc = errno;
+    }
+                                        </code></pre>
+                                    </section>
+
+                                    <section>
+                                        Cleanup:
+                                        <pre><code class="hljs" data-trim>
+    close(fd);
+    seccomp_release(ctx);
+                                        </code></pre>
+                                    </section>
+                                </section>
 				<section data-markdown>
 					<textarea data-template>
 					### Demo
